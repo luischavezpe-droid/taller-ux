@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Aplicación accesible para el registro y gestión de notas de estudiantes.">
+  <title>Registro de Notas de Estudiantes</title>
+  <style>
+    :root {
+      --color-primary: #1d4ed8;
+      --color-primary-hover: #1e40af;
+      --color-success: #15803d;
+      --color-danger: #b91c1c;
+      --color-danger-hover: #991b1b;
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-text: #0f172a;
+      --color-muted: #475569;
+      --color-border: #64748b;
+      --focus-ring: #2563eb;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 var(--spacing-md);
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-top: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    label {
+      display: block;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px; /* Ley de Fitts y WCAG */
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 1rem;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      background-color: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    input:focus-visible, button:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .btn {
+      min-height: 44px; /* Ley de Fitts y WCAG */
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: #ffffff;
+      width: 100%;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--color-primary-hover);
+    }
+
+    .btn-primary:disabled {
+      background-color: var(--color-muted);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn-borrar {
+      background-color: var(--color-danger);
+      color: #ffffff;
+      min-height: 44px;
+      padding: var(--spacing-xs) var(--spacing-md);
+    }
+
+    .btn-borrar:hover {
+      background-color: var(--color-danger-hover);
+    }
+
+    .error-msg {
+      color: var(--color-danger);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: var(--spacing-xs);
+      display: none;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background-color: var(--color-surface);
+      margin-bottom: var(--spacing-sm);
+      padding: var(--spacing-md);
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-left: 6px solid var(--color-border);
+      gap: var(--spacing-md);
+    }
+
+    li.aprobado {
+      border-left-color: var(--color-success);
+    }
+
+    li.desaprobado {
+      border-left-color: var(--color-danger);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .badge-aprobado {
+      background-color: #dcfce7;
+      color: var(--color-success);
+    }
+
+    .badge-desaprobado {
+      background-color: #fee2e2;
+      color: var(--color-danger);
+    }
+
+    .resumen {
+      background-color: var(--color-surface);
+      padding: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      font-size: 1.1rem;
+    }
+
+    /* Notificaciones dinámicas accesibles */
+    #toastContainer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .toast {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: var(--spacing-md);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-sm);
+    }
+
+    .btn-undo {
+      background-color: #f59e0b;
+      color: #000000;
+      border: none;
+      padding: 6px 12px;
+      min-height: 36px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-undo:hover {
+      background-color: #d97706;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Registro de Notas de Estudiantes</h1>
+
+  <form id="formEstudiante">
+    <div class="form-group">
+      <label for="nombre">Nombre del Estudiante:</label>
+      <input type="text" id="nombre" placeholder="Ej. Ana García" required>
+    </div>
+
+    <div class="form-group">
+      <label for="curso">Curso:</label>
+      <input type="text" id="curso" placeholder="Ej. Programación Web" required>
+    </div>
+
+    <div class="form-group">
+      <label for="nota">Nota (0 a 20):</label>
+      <input type="number" id="nota" min="0" max="20" step="0.1" placeholder="Ej. 15.5" required aria-describedby="errorNota">
+      <p id="errorNota" class="error-msg">⚠️ La nota debe estar en el rango de 0 a 20.</p>
+    </div>
+
+    <button type="submit" id="btnGuardar" class="btn btn-primary" disabled>Registrar Estudiante</button>
+  </form>
+
+  <h2>Lista de Estudiantes</h2>
+  <ul id="listaEstudiantes"></ul>
+
+  <div class="resumen">
+    <strong>Promedio General:</strong> <span id="promedioGeneral">0.00</span>
+  </div>
+
+  <!-- Zona para notificaciones dinámicas con accesibilidad -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
